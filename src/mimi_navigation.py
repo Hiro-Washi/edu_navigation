@@ -1,9 +1,9 @@
-#!/user/bin/env python
+#!/usr/bin/env python
 #-*-coding: utf-8 -*-
 #--------
 #nIcE tO mE tU.
-#This is sorce code to bring Happychan to a certain destination.nIcE tO mE tU.
-#Author is me. And nIcE tO mE tU.
+#This is source code to bring Happychan to a certain destination.nIcE tO mE tU.
+#Author is me. aNd nIcE tO mE tU.
 #--------
 import sys
 import rospy
@@ -11,7 +11,7 @@ import actionlib
 from yaml import load
 from std_msgs.msg import String
 from std_srvs.srv import Empty
-from move_bace_msgs.msg import MoveBaceAction,MoveBaceGoal
+from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 
 class Navigation():
     def __init__(self):
@@ -23,7 +23,7 @@ class Navigation():
         self.target_name = receive_msg.data
 
     def input_value(self):
-        self.target_name = 'NULL'
+        self.target_name = 'right_side'
         while not rospy.is_shutdown() and self.target_name == 'NULL':
             print "Waiting for the message..."
             rospy.sleep(2.0)
@@ -31,7 +31,7 @@ class Navigation():
 
     def searchLocationName(self):
         rospy.loginfo("search LocationName")
-        f = open('edu.yaml')
+        f = open('set_edu_map.yaml')
         location_dict = load(f)
         f.close()
         print self.target_name
@@ -48,8 +48,9 @@ class Navigation():
     def navigationAC(self):
         try:
             rospy.loginfo("Start Navigation")
-            ac = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+            ac = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
             ac.wait_for_server()
+            print("Got action")
             clear_costmaps = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
             goal = MoveBaseGoal()
             goal.target_pose.header.frame_id = 'map'
@@ -60,8 +61,9 @@ class Navigation():
             goal.target_pose.pose.orientation.w = self.coord_list[3]
             rospy.wait_for_service('move_base/clear_costmaps')
             clear_costmaps()
-            rospy.sleep(1.0)
+            rospy.sleep(0.5)
             ac.send_goal(goal)
+            print("send goal")
             count = 0
             while not rospy.is_shutdown():
                 state = ac.get_state()
@@ -78,20 +80,20 @@ class Navigation():
                         return 2
                     else:
                         rospy.loginfo('Buried in obstacle')
-                        self.clear_costmaps()
+                        clear_costmaps()
                         rospy.loginfo('Clear Costmaps')
                         rospy.sleep(1.0)
                         count += 1
             rospy.sleep(2.0)
         except rospy.ROSInterruptException:
-            pass        
-
+            pass
 
 def main():
     nv = Navigation()
     state = 0
     rospy.loginfo('start "navigation"')
     while not rospy.is_shutdown() and not state == 3:
+        rospy.sleep(0.2)
         if state == 0:
             state = nv.input_value()
         if state == 1:
@@ -99,7 +101,6 @@ def main():
         if state == 2:
             state = nv.navigationAC()
     rospy.loginfo('Finish "Navigation"')
-
 
 if __name__ == '__main__':
     rospy.init_node('mimi_navigation.py')
