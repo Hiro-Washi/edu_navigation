@@ -23,7 +23,7 @@ class Navigation():
         self.target_name = receive_msg.data
 
     def input_value(self):
-        self.target_name = 'right_side'
+        self.target_name = 'Null'
         while not rospy.is_shutdown() and self.target_name == 'NULL':
             print "Waiting for the message..."
             rospy.sleep(2.0)

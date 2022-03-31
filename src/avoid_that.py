@@ -71,5 +71,5 @@ def main():
     outcome = sm.execute()
 
 if __name__ == '__main__':
-    rospy.init_node('edu_avoid_that')
+    rospy.init_node('avoid_that')
     main()
