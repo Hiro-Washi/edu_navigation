@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import rospy
@@ -7,24 +7,25 @@ from geometry_msgs.msg import Twist
 
 class SubscriberClass():
     def __init__(self):
-        self.ranges_message = rospy.Subscriber('/scan', LaserScan, self.messageCB)
-        self.laser = LaserScan()
+        self.ranges_message = rospy.Subscriber('/scan', LaserScan, self.laserCB)
+        #self.laser_dist = LaserScan()
+        self.laser_dist = 999.9
 
-    def messageCB(self, recieve_msg):
-        self.laser = recieve_msg
+    def laserCB(self, recieve_msg):
+        self.laser_dist = recieve_msg.ranges[359]
 
-    def messae_value(self):
-        if bool(self.laser.ranges):
-            value = self.laser.ranges[359]
-            print 'value'
-            return value
+ #   def message_value(self):
+ #       if bool(self.laser.ranges):
+ #           value = self.laser.ranges[359]
+ #           print('value')
+ #           return value
 
-class PublishClass():
+class PublisherClass():
     def __init__(self):
-        self.pub_message = rospy.Publisher('cmd_vel_mux/input/teleope', Twist,queue_size = 1)
+        self.pub_message = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist,queue_size = 1)
         self.count = 1
 
-    def linerContorol(self, value):
+    def linerControl(self, value):
         twist_cmd = Twist()
         twist_cmd.linear.x = value
         rospy.sleep(0.1)
@@ -32,15 +33,14 @@ class PublishClass():
 
 def main():
     safety_distance = 2.0
-    rospy.loginfo('start "open_door"')
+    rospy.loginfo('\nstart "open_door"')
     sub = SubscriberClass()
-    pub = PublishClass()
-    while not ropy.is_shutdown():
-        state = sub.message_value()
-        if state >= safety_distance:
+    pub = PublisherClass()
+    while not rospy.is_shutdown():
+        if sub.laser_dist > safety_distance:
             rospy.loginfo('start forward')
             for i in range(10):
-                pub.linercontorol(0.1)
+                pub.linerControl(0.1)
                 break
         else:
             pass

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #-*-coding: utf-8 -*-
 #-----------------------------------------------------
 # Desc: みみがよけていっちまうよ〜〜
@@ -15,14 +15,14 @@ from std_srvs.srv import Empty
 from yaml import load
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 import mimi_navigation
-import kob_door_open1
-#sys.path.insert(0, '/home/hiroto/@home_ws/src/education_pkg/edudation_navigation/src')
-#import topic_door_enter
+# import navigation
+sys.path.insert(0, '/home/hiroto/@home_ws/src/education_pkg/edudation_navigation/src')
+import topic_door_enter
 
 # ナビゲーションの状態作成
 class navigation_state(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['navi_fin'])
+        smach.State.__init__(self, outcomes=['navigation_fin'])
 
     def execute(self, userdata):
         nv = mimi_navigation.Navigation()
@@ -36,7 +36,7 @@ class navigation_state(smach.State):
             elif state == 2:
                 sate = nv.navigationAC()
         rospy.loginfo('Finish "Navigation"')
-        return 'navi_fin'
+        return 'navigation_fin'
 
 # door_openの状態作成（障害物がある状態）
 class door_state(smach.State):
@@ -44,9 +44,7 @@ class door_state(smach.State):
         smach.State.__init__(self, outcomes = ['door_fin'])
 
     def execute(self, userdata):
-        er = kob_door_open1.EnterRoom()
-        door_execute = er.execute()
-        #door_main = topic_door_enter.main()
+        door_main = topic_door_enter.main()
         return 'door_fin'
 #        safety_distance = 2.0
 #        rospy.loginfo('start "door_open"')
@@ -60,16 +58,18 @@ class door_state(smach.State):
 #                rospy.loginfo('There are obstacles')
 
 def main():
-    sm = smach.StateMachine(outcomes=['finish'])
+    sm = smach.StateMachine(outcomes=['success', 'false'])
+    # 状態機械に対して状態を登録
     with sm:
-        smach.StateMachine.add('door_state', door_state(), 
-                                transitions = {'door_fin':'navi_state'})
-        smach.StateMachine.add('navi_state', navigation_state(), 
-                                transitions = {'navi_fin':'finish'})
+        # 出力結果と遷移先を登録
+        smach.StateMachine.add('door_state', door_state(), transitions = {'door_fin':'navi_state'})
+        smach.StateMachine.add('navi_state', navigation_state(), transitions = {'navigation_fin':'success'})
 
+    # 状態機械の状態を外部に出力する手続き
     sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
     sis.start()
 
+    # 状態機会を実行
     outcome = sm.execute()
 
 if __name__ == '__main__':
