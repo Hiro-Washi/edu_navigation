@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-import rospy, rosparam, actionlib, sys
+import rospy, rosparam, actionlib
 from yaml import load
 from std_msgs.msg import String, Float64
 from std_srvs.srv import Empty
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import sys
 sys.path.insert(0, '/home/hiroto/@home_ws/src/education_pkg/')
 from education_navigation.srv import locationName, locationNameResponse
 

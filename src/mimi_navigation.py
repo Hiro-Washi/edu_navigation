@@ -41,10 +41,9 @@ class Navigation():
         return 1
 
     def searchLocation(self):
-        f = 
-        #open('/home/hiroto/@home_ws/src/education_pkg/education_navigation/config/set_edu_map.yaml')
-        #open('/home/hiroto/@home_ws/src/education_pkg/education_navigation/config/wh_yumeko_1.yaml')
-        open('/home/hiroto/@home_ws/src/mc_education/ros_noetic/navigation/location/yumekobo.yaml')
+        f = open('/home/hiroto/@home_ws/src/education_pkg/education_navigation/config/set_edu_map.yaml')
+        #f = open('/home/hiroto/@home_ws/src/education_pkg/education_navigation/config/wh_yumeko_1.yaml')
+        #f = open('/home/hiroto/@home_ws/src/mc_education/ros_noetic/navigation/location/yumekobo.yaml')
         location_dict = load(f)
         f.close()
         print("search the location name >> " + self.target_name)
@@ -73,8 +72,8 @@ class Navigation():
             goal.target_pose.header.frame_id = 'map'
             goal.target_pose.header.stamp = rospy.Time.now()
             goal.target_pose.pose.position.x = self.coord_list[0]
-            goal.target_pose.pose.position.y = self.coord_list[1]
-            goal.target_pose.pose.orientation.z = self.coord_list[2]
+	         goal.target_pose.pose.position.y = self.coord_list[1]
+	         goal.target_pose.pose.orientation.z = self.coord_list[2]
             goal.target_pose.pose.orientation.w = self.coord_list[3]
             rospy.wait_for_service('move_base/clear_costmaps')
             clear_costmaps()
