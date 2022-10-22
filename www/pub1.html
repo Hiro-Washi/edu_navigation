@@ -5,13 +5,12 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <style type="text/css">
     <!--
-      *{ padding:; margin:0px;}
+      *{ padding:0px; margin:0px;}
       H3 { color : blue }
       .body { margin-left:25 }
     -->
     </style>
     <title>ROS Web Publiser TEST</title>
-    <!--first need to import all of the required JavaScript files for the application, including EventEmitter2 and roslibjs.-->
     <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
     <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
   </head>
@@ -22,22 +21,21 @@
         ここにテキストが入ります。
     </p>
     <script type="text/Javascript">
-    // Connecting to ROS
         <!--
 if(!Talker){
     var Talker = {
         ros : null,
         name : "",
         // rosbridgeのコネクションの状態が変わった時の処理
-        init :function(){
+        init : function(){
             //create a Ros node object to communicate with a rosbridge v2.0 server.
             //connect to localhost on the default port of 9090.
             this.ros = new ROSLIB.Ros();
             //monitor the connection to the rosbridge server.--------------
             this.ros.on('error', function(error) {
-                document.getElementById('state').innerHTML = "Error"; ####
+                document.getElementById('state').innerHTML = "Error";
             });
-            this.ros.on('connection', function(error) {
+            this.ros.on('close', function(error) {
                 document.getElementById('state').innerHTML = "Close";
             });
             //adds a listener for a connection event to the ros object
@@ -75,11 +73,9 @@ if(!Talker){
     <p>status: <label id="state">Disconnect</label></p> <!---->
     
     <from action="javascript:Talker.send();" id="ui">
-      <label>Comment: </label>      <!---->
+      <label>Comment: </label>
       <input type="text" id="comment" size="20" />
       <input type="submit" value="send" id="btn" /><br/>
     </from>
-
   </body>
-
 </html>

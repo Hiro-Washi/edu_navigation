@@ -13,49 +13,49 @@
     <body>
     <script type="text/javascript">
     <!--
-    if(!Listener){
-        var Listener = {
-            ros : null,
-            name : "",
-            init : function(){
-                this.ros = new ROSLIB.Ros();
-                this.ros.on('error', function(error) { 
-                    document.getElementById('state').innerHTML = "Error";
-                    console.log('ERROR: Error commectiong to websocket server: ',error);
-                });
-                this.ros.on('connection', function(error) {
-                    document.getElementById('state').innerHTML = "Connect";
-                    console.log('CONNECTED: Connected to websocket server');
-                });
-                this.ros.on('close', function(error) {
-                    document.getElementById('state').innerHTML = "Close";
-                    console.log('CLOSED: Connection to websocket server was Closed');
-                });
-                this.ros.connect('ws://localhost:9090');
+if(!Listener){
+    var Listener = {
+        ros : null,
+        name : "",
+        init : function(){
+            this.ros = new ROSLIB.Ros();
+            this.ros.on('error', function(error) { 
+                document.getElementById('state').innerHTML = "Error";
+                console.log("ERROR: Error commectiong to websocket server:", error);
+            });
+            this.ros.on('connection', function(error) {
+                document.getElementById('state').innerHTML = "Connect";
+                console.log("CONNECTED: Connected to websocket server");
+            });
+            this.ros.on('close', function(error) {
+                document.getElementById('state').innerHTML = "Close";
+                console.log('CLOSED: Connection to websocket server was Closed');
+            });
+            this.ros.connect('ws://' + location.hostname + ':9090');
+        
+            var sub1 = new ROSLIB.Toppic({
+                ros : this.ros,
+                name : '/chatter',
+                messageType : 'std_msgs/String'
+            });
             
-                ver sub1 = new ROSLIB.Toppic({
-                    ros : this.ros,
-                    name : '/chatter',
-                    messageType : 'std_msgs/String'
-                });
-                
-                sub1.Subscribe(function(message) {
-                    var res = message.data;
-                    var el = document.createElement('p');
-                    el.innerHTML= res
-                    document.getElementById('talk').appendChild(el);
-                });
-            }
+            sub1.Subscribe(function(message) {
+                var res = message.data;
+                var el = document.createElement('p');
+                el.innerHTML= res
+                document.getElementById('talk').appendChild(el);
+            });
         }
-        Listener.init();
-
-        window.onload = function(){ //???
-            Listener.ros.close();   //???
-        };
     }
-            //-->
-        </script>
-        <p>status: <label id="state">Disconnect</label></p>
-        <div id="talk"><p></p></div>
-      </body>
-    </html>
+    Listener.init();
+
+    window.onload = function(){ //???
+        Listener.ros.close();   //???
+    };
+}
+        //-->
+    </script>
+    <p>status: <label id="state">Disconnect</label></p>
+    <div id="talk"><p></p></div>
+  </body>
+</html>

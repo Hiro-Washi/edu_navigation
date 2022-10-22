@@ -1,0 +1,52 @@
+<html lang="ja">
+<head>
+<meta Charset="UTF-*">
+<title>ros sample</title>
+<script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+</head>
+<body>
+    <h3>rosjs1</h3>
+
+<script>
+// com to rosbrige
+const ros=new ROSLIB.Ros({
+    url : 'ws//192.168.1.101:9090'
+});
+
+// Callback when connected
+ros.on('connection', function() {
+    console.log('Connecteed to websocket server.');
+});
+ros.on('error',function(error) {
+    console.log('Error connecting to websocket server: ', error);
+});
+// When shutout
+ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+});
+
+// Publish
+const cmdVel = new ROSLIB.Topic({
+    ros : ros,
+    name : '/tutrial1/cmd)vel',
+    messageType : 'geometry_msgs/Twist'
+});
+
+const twist = new ROSLIB.Message({
+    linear : {
+        x : 2.0,
+        y : 0,
+        z : 0
+    },
+    angular : {
+        x : 0,
+        y : 0,
+        z : 1.8
+    }
+});
+
+cmdVel.publish(twist);
+</script>
+</body>
+
